@@ -1,0 +1,1141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Fuji-Haya Trivia Game</title>
+
+    <!-- GOOGLE FONT -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- CONFETTI -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --primary: #0d0dcc;
+        --secondary: #013f8e;
+        --white: #ffffff;
+        --dark: #2e2e2e;
+        --light: #f2f4f7;
+        --yellow: #ffc107;
+      }
+
+      body {
+        font-family: "Open Sans", sans-serif;
+
+        background: linear-gradient(-45deg, #0048ff, #6a5cff, #00b7ff, #7f5cff);
+
+        background-size: 400% 400%;
+
+        animation: gradientBG 10s ease infinite;
+
+        min-height: 100vh;
+
+        overflow: hidden;
+
+        color: var(--white);
+      }
+
+      @keyframes gradientBG {
+        0% {
+          background-position: 0% 50%;
+        }
+
+        50% {
+          background-position: 100% 50%;
+        }
+
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .container {
+        width: 100%;
+        height: 100vh;
+        padding: 30px 50px;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        z-index: 2;
+      }
+
+      /* FLOATING CIRCLES */
+
+      .circle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        animation: float 15s infinite linear;
+      }
+
+      .circle:nth-child(1) {
+        width: 150px;
+        height: 150px;
+        top: 10%;
+        left: 5%;
+      }
+
+      .circle:nth-child(2) {
+        width: 250px;
+        height: 250px;
+        bottom: -50px;
+        right: 5%;
+        animation-duration: 20s;
+      }
+
+      .circle:nth-child(3) {
+        width: 120px;
+        height: 120px;
+        bottom: 20%;
+        left: 30%;
+        animation-duration: 18s;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0px) rotate(0deg);
+        }
+
+        50% {
+          transform: translateY(-40px) rotate(180deg);
+        }
+
+        100% {
+          transform: translateY(0px) rotate(360deg);
+        }
+      }
+
+      /* TOP BAR */
+
+      .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+      .logo-box {
+        width: 220px;
+        height: 180px;
+        background: rgba(13, 13, 204, 0.95);
+        border-radius: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+
+        box-shadow:
+          0 0 25px rgba(255, 255, 255, 0.2),
+          0 15px 30px rgba(0, 0, 0, 0.4);
+
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+
+        50% {
+          transform: scale(1.03);
+        }
+
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .logo-box img {
+        width: 85%;
+        object-fit: contain;
+      }
+
+      .status-container {
+        display: flex;
+        gap: 20px;
+      }
+
+      .status-box {
+        background: rgba(13, 13, 204, 0.95);
+
+        border: 3px solid rgba(255, 255, 255, 0.5);
+
+        border-radius: 999px;
+
+        padding: 20px 40px;
+
+        min-width: 230px;
+
+        text-align: center;
+
+        font-size: 2rem;
+
+        font-family: "Montserrat", sans-serif;
+
+        font-weight: 700;
+
+        box-shadow:
+          0 0 15px rgba(255, 255, 255, 0.2),
+          0 10px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      /* GAME AREA */
+
+      .game-area {
+        flex: 1;
+
+        display: grid;
+
+        grid-template-columns: 1.3fr 1fr;
+
+        gap: 50px;
+
+        align-items: center;
+      }
+
+      /* QUESTION CARD */
+
+      .question-card {
+        background: rgba(13, 13, 204, 0.95);
+
+        border: 5px solid var(--yellow);
+
+        border-radius: 40px;
+
+        padding: 50px;
+
+        min-height: 420px;
+
+        display: flex;
+
+        flex-direction: column;
+
+        justify-content: center;
+
+        box-shadow:
+          0 0 25px rgba(255, 193, 7, 0.6),
+          0 15px 30px rgba(0, 0, 0, 0.4);
+
+        animation: popIn 0.5s ease;
+      }
+
+      @keyframes popIn {
+        0% {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .question-title {
+        text-align: center;
+
+        font-family: "Montserrat", sans-serif;
+
+        font-size: 2rem;
+
+        margin-bottom: 40px;
+      }
+
+      .question-text {
+        font-size: 2.2rem;
+
+        text-align: center;
+
+        line-height: 1.6;
+
+        font-weight: 700;
+      }
+
+      /* OPTIONS */
+
+      .options-container {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+      }
+
+      .option-btn {
+        background: white;
+
+        border: 6px solid var(--yellow);
+
+        border-radius: 999px;
+
+        padding: 28px;
+
+        font-size: 2rem;
+
+        font-family: "Montserrat", sans-serif;
+
+        font-weight: 700;
+
+        color: var(--primary);
+
+        cursor: pointer;
+
+        transition: 0.2s;
+
+        box-shadow: 0 10px 0 #d6a200;
+      }
+
+      .option-btn:hover {
+        transform: translateY(-5px) scale(1.03);
+      }
+
+      .option-btn:active {
+        transform: translateY(5px);
+
+        box-shadow: 0 3px 0 #d6a200;
+      }
+
+      .option-btn.correct {
+        background: #00c853;
+        color: white;
+        border-color: #00e676;
+      }
+
+      .option-btn.wrong {
+        background: #ff1744;
+        color: white;
+        border-color: #ff8a80;
+      }
+
+      /* START OVERLAY */
+
+      .overlay {
+        position: fixed;
+
+        inset: 0;
+
+        background: rgba(0, 0, 0, 0.7);
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        z-index: 100;
+      }
+
+      .overlay-content {
+        background: rgba(13, 13, 204, 0.98);
+
+        padding: 60px;
+
+        border-radius: 40px;
+
+        text-align: center;
+
+        width: 500px;
+
+        border: 5px solid var(--yellow);
+
+        box-shadow:
+          0 0 25px rgba(255, 193, 7, 0.7),
+          0 15px 30px rgba(0, 0, 0, 0.5);
+      }
+
+      .overlay-content h1 {
+        font-family: "Montserrat", sans-serif;
+
+        font-size: 3rem;
+
+        margin-bottom: 20px;
+      }
+
+      .overlay-content p {
+        font-size: 1.2rem;
+
+        margin-bottom: 35px;
+
+        color: #ddd;
+      }
+
+      .start-btn {
+        background: var(--yellow);
+
+        border: none;
+
+        color: var(--dark);
+
+        padding: 20px 50px;
+
+        border-radius: 999px;
+
+        font-size: 1.5rem;
+
+        font-weight: 800;
+
+        cursor: pointer;
+
+        font-family: "Montserrat", sans-serif;
+
+        transition: 0.3s;
+
+        box-shadow: 0 8px 0 #d6a200;
+      }
+
+      .start-btn:hover {
+        transform: scale(1.05);
+      }
+
+      /* TIMES UP */
+
+      .times-up {
+        position: fixed;
+
+        inset: 0;
+
+        background: rgba(0, 0, 0, 0.7);
+
+        display: none;
+
+        align-items: center;
+
+        justify-content: center;
+
+        z-index: 200;
+      }
+
+      .times-up-box {
+        background: rgba(13, 13, 204, 0.98);
+
+        padding: 60px;
+
+        border-radius: 35px;
+
+        border: 5px solid var(--yellow);
+
+        text-align: center;
+
+        width: 450px;
+      }
+
+      .times-up-box h1 {
+        font-size: 3rem;
+
+        margin-bottom: 20px;
+
+        font-family: "Montserrat", sans-serif;
+      }
+
+      .times-up-box button {
+        margin-top: 20px;
+
+        padding: 18px 45px;
+
+        border: none;
+
+        border-radius: 999px;
+
+        background: var(--yellow);
+
+        font-size: 1.2rem;
+
+        font-weight: 700;
+
+        cursor: pointer;
+      }
+
+      /* WRONG EMOJI */
+
+      .emoji-float {
+        position: fixed;
+
+        font-size: 4rem;
+
+        animation: floatUp 1s ease forwards;
+
+        pointer-events: none;
+
+        z-index: 9999;
+      }
+
+      @keyframes floatUp {
+        0% {
+          transform: translateY(0) scale(0.5);
+          opacity: 1;
+        }
+
+        100% {
+          transform: translateY(-120px) scale(1.4);
+          opacity: 0;
+        }
+      }
+
+      /* RESPONSIVE */
+
+      @media (max-width: 1200px) {
+        body {
+          overflow: auto;
+        }
+
+        .container {
+          height: auto;
+        }
+
+        .game-area {
+          grid-template-columns: 1fr;
+        }
+
+        .question-text {
+          font-size: 1.6rem;
+        }
+
+        .option-btn {
+          font-size: 1.4rem;
+        }
+
+        .top-bar {
+          flex-direction: column;
+          gap: 20px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- FLOATING BACKGROUND -->
+    <div class="circle"></div>
+
+    <div class="circle"></div>
+
+    <div class="circle"></div>
+
+    <!-- AUDIO -->
+
+    <!-- Place these mp3 files beside your html -->
+    <!-- music.mp3 -->
+    <!-- correct.mp3 -->
+    <!-- wrong.mp3 -->
+
+    <audio id="bgMusic" loop>
+      <source src="music.mp3" type="audio/mpeg" />
+    </audio>
+
+    <audio id="correctSound">
+      <source src="correct.mp3" type="audio/mpeg" />
+    </audio>
+
+    <audio id="wrongSound">
+      <source src="wrong.mp3" type="audio/mpeg" />
+    </audio>
+
+    <!-- START OVERLAY -->
+
+    <div class="overlay" id="startOverlay">
+      <div class="overlay-content">
+        <h1>🎮 TRIVIA GAME 🎮</h1>
+
+        <p>Answer as many questions as you can before the timer ends!</p>
+
+        <button class="start-btn" onclick="startGame()">START GAME</button>
+      </div>
+    </div>
+
+    <!-- TIMES UP -->
+
+    <div class="times-up" id="timesUpModal">
+      <div class="times-up-box">
+        <h1>⏰ TIME'S UP!</h1>
+
+        <p style="font-size: 1.3rem; margin-top: 15px">
+          You have earned
+          <span
+            style="color: var(--yellow); font-weight: 800"
+            id="finalScoreDisplay"
+            >0</span
+          >
+          points!
+        </p>
+
+        <button onclick="restartGame()">PLAY AGAIN</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- TOP BAR -->
+
+      <div class="top-bar">
+        <div class="logo-box">
+          <img src="FHE_LOGO_2024.png" alt="logo" />
+        </div>
+
+        <div class="status-container">
+          <div class="status-box">
+            ⏳ TIMER:
+            <span id="timer">60</span>
+          </div>
+
+          <div class="status-box">
+            ⭐ POINTS:
+            <span id="score">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- GAME AREA -->
+
+      <div class="game-area">
+        <!-- QUESTION -->
+
+        <div class="question-card">
+          <div class="question-title">🧠 QUESTION:</div>
+
+          <div class="question-text" id="question">Press Start to begin!</div>
+        </div>
+
+        <!-- OPTIONS -->
+
+        <div class="options-container" id="optionsContainer"></div>
+      </div>
+    </div>
+
+    <script>
+      // QUESTIONS
+
+      //   const questions = [
+      //     {
+      //       question: "What does CPU stand for?",
+
+      //       options: [
+      //         "Central Processing Unit",
+      //         "Computer Processing Unit",
+      //         "Central Program Utility",
+      //         "Control Processing User",
+      //       ],
+
+      //       answer: "Central Processing Unit",
+      //     },
+
+      //     {
+      //       question: "Which language is used for web styling?",
+
+      //       options: ["Python", "CSS", "PHP", "Java"],
+
+      //       answer: "CSS",
+      //     },
+
+      //     {
+      //       question: "What does HTML stand for?",
+
+      //       options: [
+      //         "Hyper Text Markup Language",
+      //         "High Text Machine Language",
+      //         "Hyperlink Transfer Markup Language",
+      //         "Home Tool Markup Language",
+      //       ],
+
+      //       answer: "Hyper Text Markup Language",
+      //     },
+
+      //     {
+      //       question: "Which company created Laravel?",
+
+      //       options: ["Microsoft", "Taylor Otwell", "Google", "Meta"],
+
+      //       answer: "Taylor Otwell",
+      //     },
+
+      //     {
+      //       question: "Which symbol is used for IDs in CSS?",
+
+      //       options: [".", "#", "@", "$"],
+
+      //       answer: "#",
+      //     },
+
+      //     {
+      //       question: "Which tag is used for inserting images in HTML?",
+
+      //       options: ["<img>", "<image>", "<pic>", "<src>"],
+
+      //       answer: "<img>",
+      //     },
+      //   ];
+
+      const questions = [
+        {
+          question: "What is the primary function of a switchgear?",
+          options: [
+            "To generate electricity",
+            "To control, protect, and isolate electrical equipment",
+            "To convert AC to DC power",
+            "To measure electrical consumption",
+          ],
+          answer: "To control, protect, and isolate electrical equipment",
+        },
+        {
+          question: "What does MCB stand for in electrical systems?",
+          options: [
+            "Main Circuit Breaker",
+            "Miniature Circuit Breaker",
+            "Manual Control Board",
+            "Motor Circuit Bus",
+          ],
+          answer: "Miniature Circuit Breaker",
+        },
+        {
+          question: "What is the purpose of a circuit breaker?",
+          options: [
+            "To increase voltage in a circuit",
+            "To automatically interrupt electrical flow during a fault",
+            "To store electrical energy",
+            "To convert electrical energy to mechanical energy",
+          ],
+          answer: "To automatically interrupt electrical flow during a fault",
+        },
+        {
+          question: "What does MCCB stand for?",
+          options: [
+            "Motor Control Circuit Board",
+            "Molded Case Circuit Breaker",
+            "Main Current Control Breaker",
+            "Manual Circuit Control Box",
+          ],
+          answer: "Molded Case Circuit Breaker",
+        },
+        {
+          question:
+            "Which type of switchgear is used for voltages above 36 kV?",
+          options: [
+            "Low Voltage Switchgear",
+            "Medium Voltage Switchgear",
+            "High Voltage Switchgear",
+            "Ultra Low Voltage Switchgear",
+          ],
+          answer: "High Voltage Switchgear",
+        },
+        {
+          question:
+            "What is the function of a contactor in an electrical panel?",
+          options: [
+            "To measure power consumption",
+            "To protect against lightning surges",
+            "To repeatedly switch a circuit on and off",
+            "To convert DC to AC power",
+          ],
+          answer: "To repeatedly switch a circuit on and off",
+        },
+        {
+          question: "What gas is commonly used in SF6 circuit breakers?",
+          options: [
+            "Sulfur Hexafluoride",
+            "Carbon Dioxide",
+            "Nitrogen",
+            "Hydrogen",
+          ],
+          answer: "Sulfur Hexafluoride",
+        },
+        {
+          question: "What does RCCB stand for?",
+          options: [
+            "Residual Current Circuit Breaker",
+            "Rotary Current Control Board",
+            "Remote Control Circuit Breaker",
+            "Rated Current Circuit Bus",
+          ],
+          answer: "Residual Current Circuit Breaker",
+        },
+        {
+          question: "What is the unit of electrical resistance?",
+          options: ["Ampere", "Watt", "Ohm", "Volt"],
+          answer: "Ohm",
+        },
+        {
+          question: "What is a busbar in an electrical switchgear panel?",
+          options: [
+            "A type of circuit breaker",
+            "A conductor that carries current and distributes it to multiple circuits",
+            "A device that measures voltage",
+            "A protective relay component",
+          ],
+          answer:
+            "A conductor that carries current and distributes it to multiple circuits",
+        },
+        {
+          question: "What does ACB stand for in medium/high voltage systems?",
+          options: [
+            "Automatic Control Board",
+            "Air Circuit Breaker",
+            "Active Current Breaker",
+            "Alternating Current Box",
+          ],
+          answer: "Air Circuit Breaker",
+        },
+        {
+          question:
+            "What is the purpose of a surge protector in electrical systems?",
+          options: [
+            "To increase current flow",
+            "To protect equipment from voltage spikes",
+            "To convert AC power to DC power",
+            "To store backup energy",
+          ],
+          answer: "To protect equipment from voltage spikes",
+        },
+        {
+          question:
+            "Which standard governs low-voltage switchgear and controlgear assemblies internationally?",
+          options: ["IEC 61439", "IEEE 802.3", "ISO 9001", "NEMA 250"],
+          answer: "IEC 61439",
+        },
+        {
+          question: "What is the purpose of a thermal overload relay?",
+          options: [
+            "To boost voltage during peak hours",
+            "To protect motors from overheating due to excess current",
+            "To regulate frequency in the power grid",
+            "To store excess electrical energy",
+          ],
+          answer: "To protect motors from overheating due to excess current",
+        },
+        {
+          question: "What does VCB stand for in switchgear?",
+          options: [
+            "Variable Circuit Breaker",
+            "Vacuum Circuit Breaker",
+            "Voltage Control Box",
+            "Vertical Current Breaker",
+          ],
+          answer: "Vacuum Circuit Breaker",
+        },
+        {
+          question:
+            "What is the main advantage of a vacuum circuit breaker over an oil circuit breaker?",
+          options: [
+            "Higher cost efficiency",
+            "It requires more maintenance",
+            "It is safer and requires less maintenance",
+            "It operates only at low voltages",
+          ],
+          answer: "It is safer and requires less maintenance",
+        },
+        {
+          question: "What does IP rating stand for on electrical enclosures?",
+          options: [
+            "Internal Power",
+            "Ingress Protection",
+            "Insulation Performance",
+            "Input Parameter",
+          ],
+          answer: "Ingress Protection",
+        },
+        {
+          question:
+            "What is a PLC commonly used for in electric manufacturing?",
+          options: [
+            "Power Line Conditioning",
+            "Programmable Logic Controller for automation",
+            "Primary Load Circuit",
+            "Portable Load Calculator",
+          ],
+          answer: "Programmable Logic Controller for automation",
+        },
+        {
+          question:
+            "What is the purpose of earthing (grounding) in electrical systems?",
+          options: [
+            "To increase the system voltage",
+            "To provide a safe path for fault current and protect personnel",
+            "To boost the efficiency of transformers",
+            "To reduce power consumption",
+          ],
+          answer:
+            "To provide a safe path for fault current and protect personnel",
+        },
+        {
+          question: "What is a transformer used for in power distribution?",
+          options: [
+            "To store electrical energy",
+            "To change the voltage level of AC power",
+            "To convert AC power to DC power",
+            "To protect against short circuits",
+          ],
+          answer: "To change the voltage level of AC power",
+        },
+        {
+          question: "What does ATS stand for in power systems?",
+          options: [
+            "Automatic Transfer Switch",
+            "Advanced Transformer System",
+            "Alternating Transmission Signal",
+            "Auxiliary Terminal Socket",
+          ],
+          answer: "Automatic Transfer Switch",
+        },
+        {
+          question: "What is the role of a fuse in an electrical circuit?",
+          options: [
+            "To regulate voltage levels",
+            "To melt and break the circuit when current exceeds a safe level",
+            "To convert electrical energy into heat permanently",
+            "To amplify the electrical signal",
+          ],
+          answer:
+            "To melt and break the circuit when current exceeds a safe level",
+        },
+        {
+          question: "What does the term 'short circuit' mean?",
+          options: [
+            "A circuit with very high resistance",
+            "An unintended low-resistance connection between two points causing excessive current",
+            "A circuit designed for low voltage applications",
+            "A temporary power-saving mode in electrical systems",
+          ],
+          answer:
+            "An unintended low-resistance connection between two points causing excessive current",
+        },
+        {
+          question: "What is power factor in an AC electrical system?",
+          options: [
+            "The ratio of real power to apparent power",
+            "The total amount of energy consumed per hour",
+            "The difference between voltage and current",
+            "The maximum load a circuit can handle",
+          ],
+          answer: "The ratio of real power to apparent power",
+        },
+        {
+          question:
+            "What is the standard color for a ground/earth wire in most international wiring codes?",
+          options: ["Red", "Blue", "Green/Yellow", "Black"],
+          answer: "Green/Yellow",
+        },
+      ];
+
+      let shuffledQuestions = [];
+
+      let currentQuestionIndex = 0;
+
+      let score = 0;
+
+      let timer = 60;
+
+      let countdown;
+
+      const timerDisplay = document.getElementById("timer");
+
+      const scoreDisplay = document.getElementById("score");
+
+      const questionDisplay = document.getElementById("question");
+
+      const optionsContainer = document.getElementById("optionsContainer");
+
+      const bgMusic = document.getElementById("bgMusic");
+
+      const correctSound = document.getElementById("correctSound");
+
+      const wrongSound = document.getElementById("wrongSound");
+
+      // SHUFFLE
+
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+
+        return array;
+      }
+
+      // START GAME
+
+      function startGame() {
+        document.getElementById("startOverlay").style.display = "none";
+
+        bgMusic.volume = 0.3;
+
+        bgMusic.play();
+
+        initializeGame();
+
+        startTimer();
+      }
+
+      // INITIALIZE
+
+      function initializeGame() {
+        shuffledQuestions = shuffleArray([...questions]);
+
+        currentQuestionIndex = 0;
+
+        score = 0;
+
+        timer = 60;
+
+        scoreDisplay.textContent = score;
+
+        timerDisplay.textContent = timer;
+
+        loadQuestion();
+      }
+
+      // LOAD QUESTION
+
+      function loadQuestion() {
+        if (currentQuestionIndex >= shuffledQuestions.length) {
+          currentQuestionIndex = 0;
+
+          shuffledQuestions = shuffleArray([...questions]);
+        }
+
+        const currentQuestion = shuffledQuestions[currentQuestionIndex];
+
+        questionDisplay.textContent = currentQuestion.question;
+
+        optionsContainer.innerHTML = "";
+
+        // RE-ANIMATE QUESTION CARD
+
+        const card = document.querySelector(".question-card");
+
+        card.style.animation = "none";
+
+        setTimeout(() => {
+          card.style.animation = "popIn 0.5s ease";
+        }, 10);
+
+        const shuffledOptions = shuffleArray([...currentQuestion.options]);
+
+        shuffledOptions.forEach((option) => {
+          const button = document.createElement("button");
+
+          button.classList.add("option-btn");
+
+          button.textContent = option;
+
+          button.onclick = () => checkAnswer(button, option);
+
+          optionsContainer.appendChild(button);
+        });
+      }
+
+      // WRONG EMOJI
+
+      function showWrongEmoji() {
+        const emoji = document.createElement("div");
+
+        emoji.className = "emoji-float";
+
+        emoji.innerHTML = "👎 😢";
+
+        emoji.style.left = Math.random() * 80 + "%";
+
+        emoji.style.top = "50%";
+
+        document.body.appendChild(emoji);
+
+        setTimeout(() => {
+          emoji.remove();
+        }, 1000);
+      }
+
+      // CHECK ANSWER
+
+      function checkAnswer(button, selectedOption) {
+        const correctAnswer = shuffledQuestions[currentQuestionIndex].answer;
+
+        const buttons = document.querySelectorAll(".option-btn");
+
+        buttons.forEach((btn) => (btn.disabled = true));
+
+        if (selectedOption === correctAnswer) {
+          button.classList.add("correct");
+
+          score += 10;
+
+          scoreDisplay.textContent = score;
+
+          // CONFETTI
+
+          confetti({
+            particleCount: 150,
+            spread: 90,
+            origin: { y: 0.6 },
+          });
+
+          correctSound.currentTime = 0;
+
+          correctSound.play();
+        } else {
+          button.classList.add("wrong");
+
+          wrongSound.currentTime = 0;
+
+          wrongSound.play();
+
+          showWrongEmoji();
+
+          buttons.forEach((btn) => {
+            if (btn.textContent === correctAnswer) {
+              btn.classList.add("correct");
+            }
+          });
+        }
+
+        setTimeout(() => {
+          currentQuestionIndex++;
+
+          loadQuestion();
+        }, 1500);
+      }
+
+      // TIMER
+
+      function startTimer() {
+        clearInterval(countdown);
+
+        countdown = setInterval(() => {
+          timer--;
+
+          timerDisplay.textContent = timer;
+
+          if (timer <= 0) {
+            clearInterval(countdown);
+
+            showTimesUp();
+          }
+        }, 1000);
+      }
+
+      // TIMES UP
+
+      function showTimesUp() {
+        document.getElementById("timesUpModal").style.display = "flex";
+
+        finalScoreDisplay.textContent = score;
+      }
+
+      // RESTART
+
+      function restartGame() {
+        document.getElementById("timesUpModal").style.display = "none";
+
+        initializeGame();
+
+        startTimer();
+      }
+    </script>
+  </body>
+</html>
